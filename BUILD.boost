@@ -1,3 +1,4 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@bazel_skylib//lib:selects.bzl", "selects")
 load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_library", "boost_so_library", "hdr_list")
@@ -353,36 +354,27 @@ BOOST_ATOMIC_DEPS = [
     ":winapi",
 ]
 
-cc_library(
-    name = "atomic_sse",
-    srcs = BOOST_ATOMIC_SSE_SRCS + glob([
-        "libs/atomic/src/*.hpp",
-        "boost/atomic/detail/*.hpp",
-    ]),
-    copts = [
-        "-msse2",
-        "-msse4.1",
-        "-Iexternal/boost/libs/atomic/src",
-    ],
-    visibility = ["//visibility:private"],
-    deps = BOOST_ATOMIC_DEPS,
-)
-
 boost_library(
     name = "atomic",
     srcs = select({
         ":windows_x86_64": ["libs/atomic/src/wait_ops_windows.cpp"],
         "//conditions:default": [],
+    }) + select({
+        "@platforms//cpu:x86_64": BOOST_ATOMIC_SSE_SRCS,
+        "//conditions:default": [],
     }),
     hdrs = [
         "boost/memory_order.hpp",
     ],
-    copts = ["-Iexternal/boost/libs/atomic/src"],
-    exclude_src = ["libs/atomic/src/wait_ops_windows.cpp"] + BOOST_ATOMIC_SSE_SRCS,
-    deps = BOOST_ATOMIC_DEPS + select({
-        ":x86_64": [":atomic_sse"],
+    copts = ["-Iexternal/boost/libs/atomic/src"] + select({
+        "@platforms//cpu:x86_64": [
+            "-msse2",
+            "-msse4.1",
+        ],
         "//conditions:default": [],
     }),
+    exclude_src = ["libs/atomic/src/wait_ops_windows.cpp"] + BOOST_ATOMIC_SSE_SRCS,
+    deps = BOOST_ATOMIC_DEPS,
 )
 
 boost_library(
@@ -804,6 +796,7 @@ boost_library(
         ":smart_ptr",
         ":system",
         ":type_traits",
+        ":winapi",
     ],
 )
 
@@ -1136,7 +1129,9 @@ BOOST_LOCALE_POSIX_COPTS = [
     "-DBOOST_LOCALE_NO_WINAPI_BACKEND",
 ]
 
-BOOST_LOCALE_WIN32_COPTS = []
+BOOST_LOCALE_WIN32_COPTS = [
+    "-DBOOST_LOCALE_NO_POSIX_BACKEND",
+]
 
 boost_library(
     name = "locale",
@@ -1870,6 +1865,7 @@ boost_library(
         ":noncopyable",
         ":predef",
         ":utility",
+        ":winapi",
     ],
 )
 
@@ -1950,6 +1946,7 @@ boost_library(
         ":enable_shared_from_this",
         ":exception",
         ":function",
+        ":intrusive_ptr",
         ":io",
         ":lexical_cast",
         ":smart_ptr",
