@@ -1510,6 +1510,9 @@ boost_library(
         ":type_traits",
         ":version",
     ],
+    defines = [
+        "BOOST_PROGRAM_OPTIONS_DYN_LINK"
+    ]
 )
 
 boost_library(
