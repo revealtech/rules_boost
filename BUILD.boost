@@ -1058,6 +1058,9 @@ boost_library(
         "@org_bzip_bzip2//:bz2lib",
         "@org_lzma_lzma//:lzma",
     ],
+    defines = [
+        "BOOST_IOSTREAMS_DYN_LINK"
+    ]
 )
 
 boost_library(
