@@ -166,6 +166,7 @@ cc_library(
     ],
     linkopts = select({
         ":android": [],
+        ":windows": [],
         "//conditions:default": ["-lpthread"],
     }),
     linkstatic = select({

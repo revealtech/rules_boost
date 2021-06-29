@@ -420,6 +420,7 @@ boost_library(
     }),
     linkopts = select({
         ":android": [],
+        ":windows_x86_64": [],
         "//conditions:default": ["-lpthread"],
     }),
     deps = [
