@@ -41,6 +41,7 @@ def hdr_list(library_name, exclude = []):
 def boost_library(
         name,
         boost_name = None,
+        header_def_name = None,
         defines = None,
         local_defines = None,
         includes = None,
@@ -55,6 +56,9 @@ def boost_library(
         visibility = ["//visibility:public"]):
     if boost_name == None:
         boost_name = name
+
+    if header_def_name == None:
+        header_def_name = name
 
     if defines == None:
         defines = []
@@ -79,6 +83,16 @@ def boost_library(
 
     if linkopts == None:
         linkopts = []
+
+    local_defines += select({
+        ":no_dynamic_mode": [],
+        "//conditions:default": ["BOOST_ALL_DYN_LINK".format(header_def_name.upper()), "BOOST_{}_BUILD_DLL".format(header_def_name.upper()),  "BOOST_{}_BUILDING_THE_LIB".format(header_def_name.upper())]
+    }) + ["BOOST_{}_SOURCE=1".format(header_def_name.upper())]
+
+    defines += select({
+        ":no_dynamic_mode": [],
+        "//conditions:default": ["BOOST_{}_DYN_LINK".format(header_def_name.upper())]
+    })
 
     return native.cc_library(
         name = name,
