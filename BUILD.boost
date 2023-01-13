@@ -360,6 +360,8 @@ BOOST_ATOMIC_DEPS = [
     ":predef",
     ":type_traits",
     ":winapi",
+    ":static_assert",
+    ":preprocessor",
 ]
 
 boost_library(
@@ -744,6 +746,11 @@ boost_library(
     deps = [
         ":filesystem",
     ],
+    linkopts = select({
+        "@platforms//os:linux": ["-ldl"],
+        "@platforms//os:android": ["-ldl"],
+        "//conditions:default": [],
+    })
 )
 
 boost_library(
@@ -798,11 +805,16 @@ boost_library(
     name = "filesystem",
     copts = _w_no_deprecated,
     deps = [
+        ":assert",
         ":config",
+        ":cstdint",
+        ":detail",
         ":functional",
         ":io",
         ":iterator",
+        ":predef",
         ":range",
+        ":scoped_array",
         ":smart_ptr",
         ":system",
         ":type_traits",
@@ -1052,6 +1064,7 @@ boost_library(
         ":integer",
         ":mpl",
         ":noncopyable",
+        ":numeric_conversion",
         ":preprocessor",
         ":random",
         ":range",
@@ -1739,10 +1752,14 @@ boost_library(
     deps = [
         ":archive",
         ":array",
+        ":assert",
         ":call_traits",
         ":config",
+        ":core",
         ":detail",
         ":function",
+        ":integer",
+        ":limits",
         ":operators",
         ":type_traits",
     ],
@@ -2169,6 +2186,7 @@ boost_library(
         ":cstdint",
         ":io",
         ":limits",
+        ":predef",
         ":system",
         ":throw_exception",
     ],
@@ -2380,14 +2398,23 @@ boost_library(
     ],
     deps = [
         ":algorithm",
+        ":assert",
+        ":bind",
         ":conversion",
+        ":detail",
+        ":foreach",
+        ":function",
         ":fusion",
         ":intrusive_ptr",
         ":lexical_cast",
+        ":optional",
         ":parameter",
         ":property_map",
         ":property_tree",
         ":proto",
+        ":ref",
+        ":regex",
+        ":throw_exception",
         ":tti",
         ":typeof",
         ":unordered",
