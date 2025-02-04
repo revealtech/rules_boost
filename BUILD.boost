@@ -2,6 +2,20 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@bazel_skylib//lib:selects.bzl", "selects")
 load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_library", "hdr_list")
+load("@rules_license//rules:license.bzl", "license")
+
+package(
+    default_applicable_licenses = [":license"],
+    default_visibility = ["//visibility:public"],
+)
+
+license(
+    name = "license",
+    license_kinds = [
+        "@//bazel/licenses:Boost-1.0",
+    ],
+    license_text = "LICENSE_1_0.txt",
+)
 
 config_setting(
     name = "no_dynamic_mode",
